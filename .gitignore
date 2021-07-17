@@ -1,0 +1,6 @@
+dist
+node_modules
+desktop.ini
+package-lock.json
+build.bat
+@start.bat
