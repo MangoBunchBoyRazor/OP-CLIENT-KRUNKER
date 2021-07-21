@@ -5,12 +5,13 @@ const {
 const path = require("path");
 const fs = require("fs");
 const {app, globalShortcut} = require("electron").remote
-
 const dir5 = path.join(app.getPath("documents"), "OP-Client/Updates/Client-Settings");
 
+var timercolor = fs.readFileSync(`${dir5}/timercolor.txt`, 'utf8'); //white #ffffff
+var enableTimer = fs.readFileSync(`${dir5}/timertog.txt`, 'utf8'); //true
 var enableCustomSky = fs.readFileSync(`${dir5}/skytog.txt`, 'utf8'); //false
 var skyType = fs.readFileSync(`${dir5}/skyType.txt`, 'utf8'); //solid;
-var SkySolidColor = fs.readFileSync(`${dir5}/skycolor.txt`, 'utf8'); //#ffffff;
+var SkySolidColor = fs.readFileSync(`${dir5}/skycolor.txt`, 'utf8'); //white #ffffff;
 var enableSwap = fs.readFileSync(`${dir5}/swaptog.txt`, 'utf8'); //true
 
 if (enableSwap === "true") {
@@ -22,8 +23,14 @@ window.addEventListener("DOMContentLoaded", () => {
 };
 
 window.addEventListener("DOMContentLoaded", () => {
-   setCss()
+   setCss();
 });
+
+if (enableTimer === "true") {
+window.addEventListener("DOMContentLoaded", () => {
+   menuTimer();
+});
+};
 
 ipcRenderer.on("css-urls", (e, d) => {
     cssurls = d.urls;
@@ -39,6 +46,15 @@ ipcRenderer.on("css-urls", (e, d) => {
 window.prompt = importSettings = () => {
     const tempHTML = importHTML;
     menuWindow.innerHTML = tempHTML;
+	var importFile = document.getElementById("fileselect");
+	importFile.addEventListener("change", () => {
+        var fr=new FileReader();
+            fr.onload=function(){
+                document.getElementById('settingString').value=fr.result;
+            }
+		fr.readAsText(importFile.files[0]);
+		importBtn.click();
+    });
     importBtn.addEventListener("click", () => {
         parseSettings(settingString.value);
     });
@@ -56,6 +72,7 @@ window.prompt = importSettings = () => {
             }
         }
     };
+
 };
 
 function setCss() {
@@ -67,12 +84,16 @@ function setCss() {
     });
 	var sethidetab = document.getElementById("uiBase");
     var styleElement1 = document.createElement("style");
+	var styleElementMenu = document.createElement("style");
+	styleElementMenu.innerHTML = menuTimerCSS;
     styleElement1.innerHTML = hideSetCliHtml;
     sethidetab.prepend(styleElement1);
-	var styleElementCLIENT = document.createElement("style");
-	styleElementCLIENT.innerHTML = gameCSS;
-    document.head.prepend(styleElementCLIENT);
-    document.querySelector('body').prepend(styleElementCLIENT);
+	//var styleElementCLIENT = document.createElement("style");
+	//styleElementCLIENT.innerHTML = gameCSS;
+    //document.head.prepend(styleElementCLIENT);
+    //document.querySelector('body').prepend(styleElementCLIENT);
+	document.head.prepend(styleElementMenu);
+    document.querySelector('body').prepend(styleElementMenu);
 	var setbtn = document.getElementById("menuItemContainer");
 	setbtn.addEventListener("click", () => {
         CliSetSetter();
@@ -86,6 +107,18 @@ function CliSetBugFix() {
         CliSetSetter();
     });
 }
+
+function menuTimer() {
+	    setInterval(()=>{
+        document.getElementById('spectButton').setAttribute('style', 'top: 20px;left: 550px')
+        let menuTimer = document.createElement("div")
+        menuTimer.setAttribute('id', 'menuTimer')
+        menuTimer.setAttribute('style', `margin-bottom: 50px;color: ${timercolor}`)
+        document.getElementById('instructions').appendChild(menuTimer)
+        let timeValue = document.getElementById('timerVal').innerHTML
+        document.getElementById('menuTimer').innerHTML = timeValue
+    }, 1000)
+};
 
 function CliSetSetter() {
 	var layout = document.getElementById("settingsTabLayout");
@@ -176,7 +209,8 @@ function sky() {
 var importHTML = `
 <div class="setHed">Import Settings</div>
 <div class="settName" id="importSettings_div" style="display:block">Settings Input<input type="url" placeholder="Paste Settings Here" name="url" class="inputGrey2" id="settingString"></div>
-<a class="+" id="importBtn">Import</a>
+<input type="file" id="fileselect" style="float: left"></input>
+<a class="+" id="importBtn" style="float: right">Import</a>
 `;
 var hideSetCliHtml = `
 .settingTab:nth-child(7) {
@@ -185,50 +219,43 @@ var hideSetCliHtml = `
 var gameCSS = `
 @import url('https://bluzed.github.io/maz/css.css');
 `;
-var ffacss = `
-#instructions::after {
-	display: block!important;
-	margin-top: 10px!important;
-	color: red;
-	font-size: 48px!important;
-	text-transform: none!important;
-	animation:rainbow .5s linear infinite!important;
-	content: 'Please Wait... Finding FFA Lobby'!important;
+var menuTimerCSS = `
+.timerVal {
+    display:block !important;
 }
-`;
-var randomLcss = `
-#instructions::after {
-	display: block!important;
-	margin-top: 10px!important;
-	color: red;
-	font-size: 48px!important;
-	text-transform: none!important;
-	animation:rainbow .5s linear infinite!important;
-	content: 'Please Wait... Finding Random Lobby'!important;
+#uiBase.onMenu #topRight,#uiBase.onMenu #botRightHider,#uiBase.onMenu #roundsDisplay,#uiBase.onMenu .debugInfo,#uiBase.onMenu #curGameInfo,#uiBase.onMenu #teamScores,#uiBase.onMenu #bottomLeftHolder,#uiBase.onMenu #killCardHolder,#uiBase.onMenu #reloadMsg,#uiBase.onMenu #interactMsg,#uiBase.onMenu #timerIcon,#uiBase.onMenu #speedRunHolder,#uiBase.onMenu #terminalHolder,#uiBase.onMenu #hiddenMsg,#uiBase.onMenu #gameMessage,#uiBase.onMenu #propInstruct,#uiBase.onEndScrn #topRight,#uiBase.onEndScrn #botRightHider,#uiBase.onEndScrn #roundsDisplay,#uiBase.onEndScrn .debugInfo,#uiBase.onEndScrn #curGameInfo,#uiBase.onEndScrn #teamScores,#uiBase.onEndScrn #bottomLeftHolder,#uiBase.onEndScrn #killCardHolder,#uiBase.onEndScrn #reloadMsg,#uiBase.onEndScrn #interactMsg,#uiBase.onEndScrn #timerDisplay,#uiBase.onEndScrn #speedRunHolder,#uiBase.onEndScrn #terminalHolder,#uiBase.onEndScrn #hiddenMsg,#uiBase.onEndScrn #gameMessage,#uiBase.onEndScrn #propInstruct {
+    display:none !important;
 }
-`;
-//
+#uiBase.onMenu #timerDisplay {
+    position:fixed;
+    left:50%;
+    top:calc(50% + 70px);
+    transform:translate(-50%,-50%);
+    background-color:transparent;
+}
+#uiBase.onMenu #timerVal {
+    font-size:45px;
+    color:white;
+}
+`
+
+ipcRenderer.on("pointerunlock", () => {
+    document.exitPointerLock();
+});
 
 ipcRenderer.on("quickFFA", () => {
-quickFFA();
-function quickFFA() {
 	var clk = document.getElementById("menuBtnBrowser");
-	var hideMenu = document.getElementById("menuWindow");
+    var hideMenu = document.getElementById("menuWindow");
 	clk.click();
 	hideMenu.style.display = "none";
-	var st2 = document.createElement("style");
-	st2.innerHTML = ffacss;
-	document.querySelector('body').prepend(st2);
-	setTimeout(function(){ console.log(quickJoinRegion(0)); }, 1500);
-}});
+	setTimeout(function(){ console.log(quickJoinRegion(2,0)); }, 1500);
+});
+
 
 ipcRenderer.on("randomLobby", () => {
 randomLobby();
 function randomLobby() {
-	var st2 = document.createElement("style");
-	st2.innerHTML = randomLcss;
-	document.querySelector('body').prepend(st2);
-	setTimeout(function(){ ipcRenderer.send("randomLobby"); }, 1500);
+	ipcRenderer.send("randomLobby");
 }});
 
 var dirname = __dirname;

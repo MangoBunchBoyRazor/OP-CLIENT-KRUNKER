@@ -22,8 +22,133 @@ if (require("electron-squirrel-startup")) {
     // eslint-disable-line global-require
     app.quit();
 }
-
 let win;
+
+const dir5 = path.join(app.getPath("documents"), "OP-Client/Updates/Client-Settings");
+
+function restart() {
+   app.relaunch()
+   app.exit()
+};
+
+function angleload() {
+	var angletyp = fs.readFileSync(`${dir5}/angle.txt`, 'utf8'); //default
+    if (angletyp === "default") {}else{ 
+        app.commandLine.appendSwitch('use-angle', angletyp);
+	}
+};
+
+function loadSets() {
+    console.log('Settings Loading');
+
+    fs.writeFile(`${dir5}/timercolor.txt`, '#ffffff', "utf8", (err) => {
+        if (err)
+            console.log(err);
+        else {
+            console.log("Sets written");
+        }
+    });
+	
+	fs.writeFile(`${dir5}/timertog.txt`, 'true', "utf8", (err) => {
+        if (err)
+            console.log(err);
+        else {
+            console.log("Sets written");
+        }
+    });
+	
+	fs.writeFile(`${dir5}/skytog.txt`, 'false', "utf8", (err) => {
+        if (err)
+            console.log(err);
+        else {
+            console.log("Sets written");
+        }
+    });
+
+    fs.writeFile(`${dir5}/skyType.txt`, 'solid', "utf8", (err) => {
+        if (err)
+            console.log(err);
+        else {
+            console.log("Sets written");
+        }
+    });
+
+    fs.writeFile(`${dir5}/skycolor.txt`, '#ffffff', "utf8", (err) => {
+        if (err)
+            console.log(err);
+        else {
+            console.log("Sets written");
+        }
+    });
+
+    fs.writeFile(`${dir5}/swaptog.txt`, 'true', "utf8", (err) => {
+        if (err)
+            console.log(err);
+        else {
+            console.log("Sets written");
+        }
+    });
+	
+	fs.writeFile(`${dir5}/angle.txt`, 'default', "utf8", (err) => {
+            if (err)
+                console.log(err);
+            else {
+                console.log("Sets written");
+            }
+    });
+
+    console.log('Settings Loaded');
+    setTimeout(function(){ restart(); }, 1000);
+};
+
+if ((fs.existsSync(path.join(app.getPath("documents"), "OP-Client/Updates/Client-Settings"))) === false) {
+    fs.mkdirSync(path.join(app.getPath("documents"), "OP-Client/Updates/Client-Settings"), {
+        recursive: true
+    });
+    loadSets();
+}
+
+if ((fs.existsSync(path.join(app.getPath("documents"), "OP-Client/Updates/Client-Settings/timercolor.txt"))) === false) {
+   fs.writeFile(`${dir5}/timercolor.txt`, '#ffffff', "utf8", (err) => {
+        if (err)
+            console.log(err);
+        else {
+            console.log("Sets written");
+        }
+    });
+}
+
+if ((fs.existsSync(path.join(app.getPath("documents"), "OP-Client/Updates/Client-Settings/timertog.txt"))) === false) {
+    fs.writeFile(`${dir5}/timertog.txt`, 'true', "utf8", (err) => {
+        if (err)
+            console.log(err);
+        else {
+            console.log("Sets written");
+        }
+    });
+}
+
+if ((fs.existsSync(path.join(app.getPath("documents"), "OP-Client/Updates/Client-Settings/angle.txt"))) === false) {
+    fs.writeFile(`${dir5}/angle.txt`, 'default', "utf8", (err) => {
+            if (err)
+                console.log(err);
+            else {
+                console.log("Sets written");
+            }
+    });
+}else{
+	angleload()
+};
+	
+
+
+//Performance improvements
+app.commandLine.appendSwitch("disable-frame-rate-limit");// disable frame cap
+app.commandLine.appendSwitch("force_high_performance_gpu"); //Use better gpu
+app.commandLine.appendSwitch("force-high-performance-gpu"); //Use better gpu-try2
+app.commandLine.appendSwitch("in-process-gpu"); //Performance improve
+app.commandLine.appendSwitch("ignore-gpu-blacklist"); //Performance improve
+//
 
 const createWindow = () => {
     // Create the browser window.
@@ -42,6 +167,7 @@ const createWindow = () => {
         },
     });
     win.loadURL('https://krunker.io');
+	win.setFullScreen(true);
 	
     //Splash-
     splash = new BrowserWindow({
@@ -95,7 +221,7 @@ function showUwin() {
     function opensetswindow() {
         setwin = new BrowserWindow({
             width: 690,
-            height: 433,
+            height: 562,
             show: false,
 			frame: false,
             icon: __dirname + "/doc/media/icon.ico",
@@ -136,7 +262,13 @@ function showUwin() {
         } else if (check2 === false) {
             wdow.preventDefault();
             require('electron').shell.openExternal(url);
-        }
+        } else if (check3 === true) {
+			wdow.preventDefault();
+            win.loadURL(url);
+		}else if (check3 === false) {
+			wdow.preventDefault();
+            require('electron').shell.openExternal(url);
+		}
     });
 	
     win.on('close', function() { //   <---- Catch close event
@@ -178,80 +310,6 @@ ipcMain.on("discord", () => {
 	var url = "https://discord.com/invite/AkcKUyZuB9";
 	require('electron').shell.openExternal(url);
 });
-
-function restart() {
-   app.relaunch()
-   app.exit()
-};
-
-if ((fs.existsSync(path.join(app.getPath("documents"), "OP-Client/Updates/Client-Settings"))) === false) {
-    fs.mkdirSync(path.join(app.getPath("documents"), "OP-Client/Updates/Client-Settings"), {
-        recursive: true
-    });
-    loadSets();
-}else{continuew()}
-	
-function loadSets() {
-    console.log('Settings Loading');
-	
-	const dir5 = path.join(app.getPath("documents"), "OP-Client/Updates/Client-Settings");
-
-    fs.writeFile(`${dir5}/skytog.txt`, 'false', "utf8", (err) => {
-        if (err)
-            console.log(err);
-        else {
-            console.log("Sets written");
-        }
-    });
-
-    fs.writeFile(`${dir5}/skyType.txt`, 'solid', "utf8", (err) => {
-        if (err)
-            console.log(err);
-        else {
-            console.log("Sets written");
-        }
-    });
-
-    fs.writeFile(`${dir5}/skycolor.txt`, '#ffffff', "utf8", (err) => {
-        if (err)
-            console.log(err);
-        else {
-            console.log("Sets written");
-        }
-    });
-
-    fs.writeFile(`${dir5}/swaptog.txt`, 'true', "utf8", (err) => {
-        if (err)
-            console.log(err);
-        else {
-            console.log("Sets written");
-        }
-    });
-	
-	fs.writeFile(`${dir5}/angle.txt`, 'default', "utf8", (err) => {
-            if (err)
-                console.log(err);
-            else {
-                console.log("Sets written");
-            }
-    });
-
-    console.log('Settings Loaded');
-    setTimeout(function(){ restart(); }, 1000);
-};
-function continuew() {
-const dir5 = path.join(app.getPath("documents"), "OP-Client/Updates/Client-Settings");
-var angletyp = fs.readFileSync(`${dir5}/angle.txt`, 'utf8'); //default
-
-//Performance improvements
-app.commandLine.appendSwitch('use-angle', angletyp);
-app.commandLine.appendSwitch("disable-frame-rate-limit");// disable frame cap
-app.commandLine.appendSwitch("force_high_performance_gpu"); //Use better gpu
-app.commandLine.appendSwitch("force-high-performance-gpu"); //Use better gpu-try2
-app.commandLine.appendSwitch("in-process-gpu"); //Performance improve
-app.commandLine.appendSwitch("ignore-gpu-blacklist"); //Performance improve
-//
-};
 //RPC
 
 var mapName = "Beta"
@@ -319,6 +377,11 @@ rpc.login({
 		globalShortcut.register('F6', () => {
             win.webContents.send("quickFFA");
         });
+		
+		globalShortcut.register('ESC', () => {
+            win.webContents.send("pointerunlock");
+			console.log('PointerUnlock');
+        });
 
     });
 
@@ -370,7 +433,7 @@ const recursiveSwap = (dpath) => {
             } else {
                 newPath = `${dpath}/${dir.name}`;
                 const cPath = newPath.replace(
-                    `${app.getPath("documents")}\\OP-Client\\Resource-Swapper`,
+                    `${app.getPath("documents")}\\KrunkerResourceSwapper`,
                     ""
                 );
 
@@ -393,7 +456,7 @@ const recursiveSwap = (dpath) => {
     }
 };
 
-const dirPath = path.join(app.getPath("documents"), "OP-Client\\Resource-Swapper");
+const dirPath = path.join(app.getPath("documents"), "KrunkerResourceSwapper");
 
 ipcMain.on("swapFiles", () => {
     win.webContents.send("css-urls", {
@@ -413,18 +476,17 @@ ipcMain.on("swapFiles", () => {
 });
 
 //Looking for resource swapper directory in documents  
-if ((fs.existsSync(path.join(app.getPath("documents"), "OP-Client"))) === false) {
-    fs.mkdirSync(path.join(app.getPath("documents"), "OP-Client")), {
+if ((fs.existsSync(path.join(app.getPath("documents"), "KrunkerResourceSwapper"))) === false) {
+    fs.mkdirSync(path.join(app.getPath("documents"), "KrunkerResourceSwapper")), {
         recursive: true
     };
 	recursiveSwap(dirPath);
 }else{recursiveSwap(dirPath)};
 
-if ((fs.existsSync(path.join(app.getPath("documents"), "OP-Client/Resource-Swapper"))) === false) {
-    fs.mkdirSync(path.join(app.getPath("documents"), "OP-Client/Resource-Swapper")), {
-        recursive: true
-    };
-	recursiveSwap(dirPath);
-}else{recursiveSwap(dirPath)};
+if ((fs.existsSync(path.join(app.getPath("documents"), "OP-Client/Resource-Swapper"))) === true) {
+fs.rmdir(path.join(app.getPath("documents"), "OP-Client/Resource-Swapper"), (error) => {
+    if(error) throw error;
+});
+};
 
 console.log(`OP Client v${version}`);

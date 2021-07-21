@@ -9,7 +9,8 @@ const {
 } = require("electron").remote;
 
 const dir5 = path.join(app.getPath("documents"), "OP-Client/Updates/Client-Settings");
-
+var timercolor = fs.readFileSync(`${dir5}/timercolor.txt`, 'utf8'); //white #ffffff
+var enableTimer = fs.readFileSync(`${dir5}/timertog.txt`, 'utf8'); //true
 var enableCustomSky = fs.readFileSync(`${dir5}/skytog.txt`, 'utf8'); //false
 var skyType = fs.readFileSync(`${dir5}/skyType.txt`, 'utf8'); //solid;
 var SkySolidColor = fs.readFileSync(`${dir5}/skycolor.txt`, 'utf8'); //#ffffff;
@@ -31,6 +32,15 @@ function swapFunction() {
         enableswap()
     } else {
         disableswap()
+    }
+}
+
+function timFunction() {
+    var checkBox = document.getElementById("timercheck");
+    if (checkBox.checked == true) {
+        timercheck(true)
+    } else {
+        timercheck(false)
     }
 }
 
@@ -74,6 +84,16 @@ function disableswap() {
     });
 };
 
+function timercheck(val) {
+    fs.writeFile(`${dir5}/timertog.txt`, val, "utf8", (err) => {
+        if (err)
+            console.log(err);
+        else {
+            console.log("Sets written");
+        }
+    });
+};
+
 window.addEventListener("DOMContentLoaded", () => {
     allfuncs()
 });
@@ -87,6 +107,10 @@ function allfuncs() {
     if (enableSwap === "true") {
         document.getElementById("swapcheck").setAttribute("checked", "");
     } else {};
+	
+	if (enableTimer === "true") {
+        document.getElementById("timercheck").setAttribute("checked", "");
+    } else {};
 
     var skybtn = document.getElementById("skycheck");
     skybtn.addEventListener("click", () => {
@@ -97,6 +121,30 @@ function allfuncs() {
     swapbtn.addEventListener("click", () => {
         swapFunction();
     });
+	
+	var timbtn = document.getElementById("timercheck");
+    timbtn.addEventListener("click", () => {
+        timFunction();
+    });
+
+    var colorval1 = document.getElementById("timer__col");
+    colorval1.setAttribute("value", `${timercolor}`);
+    var applybutton1 = document.getElementById("applybutton1");
+    applybutton1.addEventListener("click", () => {
+        updateColor1();
+    });
+
+    function updateColor1() {
+        var v_i1 = document.getElementById("timer__col").value;
+        console.log(`Value- ${v_i1}`)
+        fs.writeFile(`${dir5}/timercolor.txt`, `${v_i1}`, "utf8", (err) => {
+            if (err)
+                console.log(err);
+            else {
+                console.log("Sets written");
+            }
+        });
+    }
 
     var colorval = document.getElementById("sky__col");
     colorval.setAttribute("value", `${SkySolidColor}`);
@@ -146,10 +194,10 @@ function allfuncs() {
     });
 
     function idk2() {
-        angle.onchange = updateType();
+        angle.onchange = updateType2();
     };
 
-    function updateType() {
+    function updateType2() {
         var newtype = document.getElementById("angle").value;
         console.log(newtype);
         fs.writeFile(`${dir5}/angle.txt`, `${newtype}`, "utf8", (err) => {
