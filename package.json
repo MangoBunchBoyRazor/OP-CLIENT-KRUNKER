@@ -1,6 +1,6 @@
 {
   "name": "OP-Client",
-  "version": "0.5.0",
+  "version": "0.5.1",
   "description": "OP Krunker Client!",
   "main": "src/index.js",
   "author": "BluZed & Maz",

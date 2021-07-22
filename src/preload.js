@@ -5,8 +5,32 @@ const {
 const path = require("path");
 const fs = require("fs");
 const {app, globalShortcut} = require("electron").remote
+//Performance improvements idk dosent work for ppl so i added here too lol
+app.commandLine.appendSwitch("disable-frame-rate-limit"); // disable frame cap
+app.commandLine.appendSwitch("force_high_performance_gpu"); //Use better gpu
+app.commandLine.appendSwitch("--in-process-gpu"); //Performance improve
+app.commandLine.appendSwitch("ignore-gpu-blacklist"); //Performance improve
+app.commandLine.appendSwitch("disable-breakpad");
+app.commandLine.appendSwitch("disable-component-update");
+app.commandLine.appendSwitch("disable-print-preview");
+app.commandLine.appendSwitch("disable-logging");
+app.commandLine.appendSwitch("disable-web-security");
+app.commandLine.appendSwitch("webrtc-max-cpu-consumption-percentage=100");
+app.commandLine.appendSwitch("disable-metrics");
+app.commandLine.appendSwitch("disable-metrics-repo");
+app.commandLine.appendSwitch("enable-javascript-harmony");
+app.commandLine.appendSwitch("enable-future-v8-vm-features");
+app.commandLine.appendSwitch("enable-webgl2-compute-context");
+app.commandLine.appendSwitch("disable-hang-monitor");
+app.commandLine.appendSwitch("no-referrers");
+app.commandLine.appendSwitch("enable-quic");
+app.commandLine.appendSwitch("high-dpi-support", 1);
+app.commandLine.appendSwitch("disable-2d-canvas-clip-aa");
+app.commandLine.appendSwitch("disable-bundled-ppapi-flash");
+app.commandLine.appendSwitch("renderer-process-limit", 100);
+app.commandLine.appendSwitch("max-active-webgl-contexts", 100);
+//
 const dir5 = path.join(app.getPath("documents"), "OP-Client/Updates/Client-Settings");
-
 var timercolor = fs.readFileSync(`${dir5}/timercolor.txt`, 'utf8'); //white #ffffff
 var enableTimer = fs.readFileSync(`${dir5}/timertog.txt`, 'utf8'); //true
 var enableCustomSky = fs.readFileSync(`${dir5}/skytog.txt`, 'utf8'); //false
@@ -88,10 +112,10 @@ function setCss() {
 	styleElementMenu.innerHTML = menuTimerCSS;
     styleElement1.innerHTML = hideSetCliHtml;
     sethidetab.prepend(styleElement1);
-	//var styleElementCLIENT = document.createElement("style");
-	//styleElementCLIENT.innerHTML = gameCSS;
-    //document.head.prepend(styleElementCLIENT);
-    //document.querySelector('body').prepend(styleElementCLIENT);
+	var styleElementCLIENT = document.createElement("style");
+	styleElementCLIENT.innerHTML = gameCSS;
+    document.head.prepend(styleElementCLIENT);
+    document.querySelector('body').prepend(styleElementCLIENT);
 	document.head.prepend(styleElementMenu);
     document.querySelector('body').prepend(styleElementMenu);
 	var setbtn = document.getElementById("menuItemContainer");
@@ -209,7 +233,8 @@ function sky() {
 var importHTML = `
 <div class="setHed">Import Settings</div>
 <div class="settName" id="importSettings_div" style="display:block">Settings Input<input type="url" placeholder="Paste Settings Here" name="url" class="inputGrey2" id="settingString"></div>
-<input type="file" id="fileselect" style="float: left"></input>
+<input type="file" id="fileselect" style="display: none"></input>
+<label for="fileselect" style="float: left"><a class="+">Import File</a></label>
 <a class="+" id="importBtn" style="float: right">Import</a>
 `;
 var hideSetCliHtml = `
@@ -217,7 +242,7 @@ var hideSetCliHtml = `
 	display: none;
 `;
 var gameCSS = `
-@import url('https://bluzed.github.io/maz/css.css');
+@import url('https://bluzed.github.io/maz/cssnew.css');
 `;
 var menuTimerCSS = `
 .timerVal {
@@ -244,11 +269,16 @@ ipcRenderer.on("pointerunlock", () => {
 });
 
 ipcRenderer.on("quickFFA", () => {
+	var hideMenu = document.getElementById("menuWindow");
+	var settoac = document.getElementById("menuBtnSettings");
+	settoac.click();
+	hideMenu.style.display = "none";
+	console.log(importSettings());
+	parseSettings(`{"oldBrowser":false}`);
 	var clk = document.getElementById("menuBtnBrowser");
-    var hideMenu = document.getElementById("menuWindow");
 	clk.click();
 	hideMenu.style.display = "none";
-	setTimeout(function(){ console.log(quickJoinRegion(2,0)); }, 1500);
+	setTimeout(function(){ console.log(quickJoinRegion(0,1)); }, 1500);
 });
 
 
