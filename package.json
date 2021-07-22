@@ -11,6 +11,7 @@
     "electron-squirrel-startup": "^1.0.0",
     "fs": "^0.0.1-security",
     "node-downloader-helper": "^1.0.18",
+    "os": "^0.1.2",
     "path": "^0.12.7",
     "shell": "^0.8.4",
     "v8-compile-cache": "^2.3.0",

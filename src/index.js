@@ -15,6 +15,7 @@ const DiscordRPC = require("discord-rpc");
 const {
     dir
 } = require("console");
+var { cpu } = require("os");
 const version = app.getVersion();
 
 // Handle creating/removing shortcuts on Windows when installing/uninstalling.
@@ -49,6 +50,9 @@ app.commandLine.appendSwitch("disable-2d-canvas-clip-aa");
 app.commandLine.appendSwitch("disable-bundled-ppapi-flash");
 app.commandLine.appendSwitch("renderer-process-limit", 100);
 app.commandLine.appendSwitch("max-active-webgl-contexts", 100);
+if (cpu()[0].model.includes("AMD")) {
+    app.commandLine.appendSwitch("enable-zero-copy");
+}
 //
 
 if ((fs.existsSync(path.join(app.getPath("documents"), "OP-Client/Updates/Client-Settings/angle.txt"))) === true) {

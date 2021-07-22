@@ -5,6 +5,7 @@ const {
 const path = require("path");
 const fs = require("fs");
 const {app, globalShortcut} = require("electron").remote
+var { cpu } = require("os");
 //Performance improvements idk dosent work for ppl so i added here too lol
 app.commandLine.appendSwitch("disable-frame-rate-limit"); // disable frame cap
 app.commandLine.appendSwitch("force_high_performance_gpu"); //Use better gpu
@@ -29,6 +30,9 @@ app.commandLine.appendSwitch("disable-2d-canvas-clip-aa");
 app.commandLine.appendSwitch("disable-bundled-ppapi-flash");
 app.commandLine.appendSwitch("renderer-process-limit", 100);
 app.commandLine.appendSwitch("max-active-webgl-contexts", 100);
+if (cpu()[0].model.includes("AMD")) {
+    app.commandLine.appendSwitch("enable-zero-copy");
+}
 //
 const dir5 = path.join(app.getPath("documents"), "OP-Client/Updates/Client-Settings");
 var timercolor = fs.readFileSync(`${dir5}/timercolor.txt`, 'utf8'); //white #ffffff
