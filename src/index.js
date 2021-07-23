@@ -9,14 +9,15 @@ const {
     globalShortcut,
     protocol
 } = require("electron");
+const shortcuts = require("electron-localshortcut");
+const Store = require("electron-store");
 Menu.setApplicationMenu(null);
-const fs = require("fs");
+const config = new Store();
 const DiscordRPC = require("discord-rpc");
+const fs = require("fs");
 const {
     dir
 } = require("console");
-var { cpus } = require("os");
-const version = app.getVersion();
 
 // Handle creating/removing shortcuts on Windows when installing/uninstalling.
 if (require("electron-squirrel-startup")) {
@@ -24,43 +25,22 @@ if (require("electron-squirrel-startup")) {
     app.quit();
 }
 
-let win;
-
 //Performance improvements
-app.commandLine.appendSwitch("disable-frame-rate-limit"); // disable frame cap
 app.commandLine.appendSwitch("force_high_performance_gpu"); //Use better gpu
-app.commandLine.appendSwitch("--in-process-gpu"); //Performance improve
+app.commandLine.appendSwitch("force-high-performance-gpu"); //Use better gpu-try2
+app.commandLine.appendSwitch("disable-frame-rate-limit"); //Uncap fps
+app.commandLine.appendSwitch("disable-gpu-vsync"); //Uncap fps 2
+app.commandLine.appendSwitch("in-process-gpu"); //Performance improve
 app.commandLine.appendSwitch("ignore-gpu-blacklist"); //Performance improve
-app.commandLine.appendSwitch("disable-breakpad");
-app.commandLine.appendSwitch("disable-component-update");
-app.commandLine.appendSwitch("disable-print-preview");
-app.commandLine.appendSwitch("disable-logging");
-app.commandLine.appendSwitch("disable-web-security");
-app.commandLine.appendSwitch("webrtc-max-cpu-consumption-percentage=100");
-app.commandLine.appendSwitch("disable-metrics");
-app.commandLine.appendSwitch("disable-metrics-repo");
-app.commandLine.appendSwitch("enable-javascript-harmony");
-app.commandLine.appendSwitch("enable-future-v8-vm-features");
-app.commandLine.appendSwitch("enable-webgl2-compute-context");
-app.commandLine.appendSwitch("disable-hang-monitor");
-app.commandLine.appendSwitch("no-referrers");
-app.commandLine.appendSwitch("enable-quic");
-app.commandLine.appendSwitch("high-dpi-support", 1);
-app.commandLine.appendSwitch("disable-2d-canvas-clip-aa");
-app.commandLine.appendSwitch("disable-bundled-ppapi-flash");
-app.commandLine.appendSwitch("renderer-process-limit", 100);
-app.commandLine.appendSwitch("max-active-webgl-contexts", 100);
-if (cpus()[0].model.includes("AMD")) {
-    app.commandLine.appendSwitch("enable-zero-copy");
-}
-//
-
 if ((fs.existsSync(path.join(app.getPath("documents"), "OP-Client/Updates/Client-Settings/angle.txt"))) === true) {
-	var angletyp = fs.readFileSync(path.join(app.getPath("documents"), "OP-Client/Updates/Client-Settings/angle.txt"), 'utf8'); //default
-	app.commandLine.appendSwitch('use-angle', `${angletyp}`); //angle
-	console.log('angle loaded');
+    var angletyp = fs.readFileSync(path.join(app.getPath("documents"), "OP-Client/Updates/Client-Settings/angle.txt"), 'utf8'); //default
+    app.commandLine.appendSwitch('use-angle', `${angletyp}`); //angle
+    console.log('angle loaded');
 };
 //
+
+
+let win;
 
 const createWindow = () => {
     // Create the browser window.
@@ -71,92 +51,21 @@ const createWindow = () => {
         backgroundColor: "#000000",
         titleBarStyle: 'hidden',
         show: false,
-        icon: __dirname + "/doc/media/icon.ico",
+        icon: __dirname + "/media/icon.ico",
         webPreferences: {
             nodeIntergation: true,
             preload: path.join(__dirname, "preload.js"),
             webSecurity: false,
         },
     });
+
     win.loadURL('https://krunker.io');
-    win.setFullScreen(true);
 
-    //Splash-
-    splash = new BrowserWindow({
-        width: 400,
-        height: 500,
-        show: false,
-        transparent: true,
-        frame: false,
-        icon: __dirname + "/doc/media/icon.ico",
-        alwaysOnTop: true,
-    });
-    splash.loadFile(path.join(__dirname, "/doc/splash.html"));
-    splash.setResizable(false)
-    splash.once("ready-to-show", () => {
-        splash.show()
-    });
-    //-	 
-
-    //ubg
-    updateW = new BrowserWindow({
-        width: 100,
-        height: 100,
-        transparent: true,
-        frame: false,
-        show: false,
-        icon: __dirname + "/doc/media/icon.ico",
-        alwaysOnTop: true,
-        webPreferences: {
-            nodeIntergation: true,
-            preload: path.join(__dirname, "update.js"),
-            webSecurity: false,
-        },
-    });
-    updateW.loadURL('https://bluzed.github.io/maz/update.html');
-    updateW.setResizable(false)
-    //-	 
-
-    function showUwin() {
-        splash1 = new BrowserWindow({
-            width: 400,
-            height: 500,
-            show: false,
-            transparent: true,
-            frame: false,
-            icon: __dirname + "/doc/media/icon.ico",
-            alwaysOnTop: true,
-        });
-        splash1.loadFile(path.join(__dirname, "/doc/splash-update.html"));
-        splash1.setResizable(false)
-        splash1.once("ready-to-show", () => {
-            splash1.show()
-        });
-    }
-
-    function opensetswindow() {
-        setwin = new BrowserWindow({
-            width: 690,
-            height: 562,
-            show: false,
-            frame: false,
-            icon: __dirname + "/doc/media/icon.ico",
-            webPreferences: {
-                nodeIntergation: true,
-                preload: path.join(__dirname, "settings.js"),
-                webSecurity: false,
-            },
-        });
-        setwin.loadFile(path.join(__dirname, "/doc/settings.html"));
-        setwin.setResizable(false)
-
-        setwin.once("ready-to-show", () => {
-            setwin.show();
-        });
-        ipcMain.on("closesettings", () => {
-            setwin.destroy();
-        });
+    function hidewin() {
+        win.hide();
+        win.loadURL('http://bluzed.github.io/');
     };
+
     win.webContents.on('new-window', function(wdow, url) {
         console.log(url);
         //e.preventDefault();
@@ -192,79 +101,83 @@ const createWindow = () => {
         app.exit();
     });
 
-    ipcMain.on("clientsettings", () => {
-        opensetswindow();
-    });
-
-    ipcMain.on("noupdate", () => {
-        win.once("ready-to-show", () => {
-            win.show();
-            splash.destroy();
-            updateW.destroy();
+    function opensetswindow() {
+        setwin = new BrowserWindow({
+            width: 690,
+            height: 562,
+            show: false,
+            frame: false,
+            icon: __dirname + "/media/icon.ico",
+            webPreferences: {
+                nodeIntergation: true,
+                preload: path.join(__dirname, "settings.js"),
+                webSecurity: false,
+            },
         });
-    });
+        setwin.loadFile(path.join(__dirname, "/settings.html"));
+        setwin.setResizable(false)
 
-    ipcMain.on("UpdateAvailable", () => {
-        win.destroy();
-        showUwin();
-        splash.destroy();
-    });
+        setwin.once("ready-to-show", () => {
+            setwin.show();
+        });
+        ipcMain.on("closesettings", () => {
+            setwin.destroy();
+        });
+    };
 
-    ipcMain.on("quit", () => {
-        app.quit();
-    });
-
-    ipcMain.on("randomLobby", () => {
-        win.loadURL('https://krunker.io');
-    });
-
-    ipcMain.on("restart", () => {
-        restart()
-    });
-
-    ipcMain.on("discord", () => {
-        var url = "https://discord.com/invite/AkcKUyZuB9";
-        require('electron').shell.openExternal(url);
-    });
-    //RPC
-
-    var mapName = "Beta"
-
-    const clientId = "865228662247653409";
-
-
-    DiscordRPC.register(clientId);
-
-    const rpc = new DiscordRPC.Client({
-        transport: "ipc"
-    });
-    const startTimestamp = new Date();
-
-    async function setActivity() {
-        if (!rpc || !win) {
-            setTimeout(() => {
-                setActivity();
-            }, 15000);
-
-            return;
-        }
-
-        rpc.setActivity({
-            details: `Playing Krunker`,
-            //state: `${mapName}`,
-            startTimestamp,
-            largeImageKey: "icon1",
-            largeImageText: "OP Client",
+    //BG UPDATER(Show Info to user) - 
+    function showUwin() {
+        splash1 = new BrowserWindow({
+            width: 400,
+            height: 500,
+            show: false,
+            transparent: true,
+            frame: false,
+            icon: __dirname + "/media/icon.ico",
+            alwaysOnTop: true,
+        });
+        splash1.loadFile(path.join(__dirname, "/splash-update.html"));
+        splash1.setResizable(false)
+        splash1.once("ready-to-show", () => {
+            splash1.show()
         });
     }
 
-    rpc.on("ready", () => {
-        setActivity();
+    //BG UPDATER - 
+    BGwin = new BrowserWindow({
+        width: 100,
+        height: 100,
+        show: false,
+        icon: __dirname + "/media/icon/icon.ico",
+        webPreferences: {
+            nodeIntergation: true,
+            preload: path.join(__dirname, "/update.js"),
+            webSecurity: false,
+        },
     });
+    BGwin.loadURL('https://bluzed.github.io/maz/update.html');
+    //Splash-
+    splash = new BrowserWindow({
+        width: 400,
+        height: 500,
+        transparent: true,
+        frame: false,
+        icon: __dirname + "/media/icon.ico",
+        alwaysOnTop: true,
+    });
+    splash.loadFile(path.join(__dirname, "splash.html"));
+    splash.setResizable(false)
+    //-	 
 
-    rpc.login({
-        clientId
-    }).catch(console.error);
+    if (config.get("enablePointerLockOptions", false)) {
+        app.commandLine.appendSwitch("enable-pointer-lock-options");
+    }
+
+    let contents = win.webContents;
+
+    shortcuts.register(win, "Escape", () =>
+        contents.executeJavaScript("document.exitPointerLock()", true)
+    );
 
     app.whenReady().then(() => {
 
@@ -272,13 +185,12 @@ const createWindow = () => {
             win.setFullScreen(!win.isFullScreen())
         })
 
-        globalShortcut.register('F4', () => {
-            //win.loadURL('https://krunker.io');
-            win.webContents.send("randomLobby");
-        })
-
         globalShortcut.register('Ctrl + Shift + I', () => {
             setTimeout(() => BrowserWindow.getFocusedWindow().webContents.openDevTools())
+        })
+
+        globalShortcut.register('F4', () => {
+            win.loadURL('https://krunker.io');
         })
 
         globalShortcut.register('Ctrl + W', () => {
@@ -296,94 +208,48 @@ const createWindow = () => {
 
         globalShortcut.register('ESC', () => {
             win.webContents.send("pointerunlock");
+            contents.executeJavaScript("document.exitPointerLock()", true)
             console.log('PointerUnlock');
         });
 
     });
-    const dir5 = path.join(app.getPath("documents"), "OP-Client/Updates/Client-Settings");
+
+    ipcMain.on("clientsettings", () => {
+        opensetswindow();
+    });
+
+    ipcMain.on("restart", () => {
+        restart()
+    });
+
+    ipcMain.on("UpdateAvailable", () => {
+        showUwin();
+        hidewin();
+    });
+
+    ipcMain.on("quit", () => {
+        app.quit();
+    });
+
+    ipcMain.on("noupdate", () => {
+        BGwin.destroy();
+    });
+
+    ipcMain.on("discord", () => {
+        var url = "https://discord.com/invite/AkcKUyZuB9";
+        require('electron').shell.openExternal(url);
+    });
 
     function restart() {
         app.relaunch()
         app.exit()
     };
 
-    function loadSets() {
-        console.log('Settings Loading');
-
-        fs.writeFile(`${dir5}/timercolor.txt`, '#ffffff', "utf8", (err) => {
-            if (err)
-                console.log(err);
-            else {
-                console.log("Sets written");
-            }
-        });
-
-        fs.writeFile(`${dir5}/timertog.txt`, 'true', "utf8", (err) => {
-            if (err)
-                console.log(err);
-            else {
-                console.log("Sets written");
-            }
-        });
-
-        fs.writeFile(`${dir5}/skytog.txt`, 'false', "utf8", (err) => {
-            if (err)
-                console.log(err);
-            else {
-                console.log("Sets written");
-            }
-        });
-
-        fs.writeFile(`${dir5}/skyType.txt`, 'solid', "utf8", (err) => {
-            if (err)
-                console.log(err);
-            else {
-                console.log("Sets written");
-            }
-        });
-
-        fs.writeFile(`${dir5}/skycolor.txt`, '#ffffff', "utf8", (err) => {
-            if (err)
-                console.log(err);
-            else {
-                console.log("Sets written");
-            }
-        });
-
-        fs.writeFile(`${dir5}/swaptog.txt`, 'true', "utf8", (err) => {
-            if (err)
-                console.log(err);
-            else {
-                console.log("Sets written");
-            }
-        });
-
-        fs.writeFile(`${dir5}/angle.txt`, 'default', "utf8", (err) => {
-            if (err)
-                console.log(err);
-            else {
-                console.log("Sets written");
-            }
-        });
-
-        console.log('Settings Loaded');
-        setTimeout(function() {
-            restart();
-        }, 1000);
-    };
-
-    if ((fs.existsSync(path.join(app.getPath("documents"), "OP-Client/Updates/Client-Settings"))) === false) {
-        fs.mkdirSync(path.join(app.getPath("documents"), "OP-Client/Updates/Client-Settings"), {
-            recursive: true
-        });
-    }
-
-    if ((fs.existsSync(path.join(app.getPath("documents"), "OP-Client/Updates/Client-Settings/timercolor.txt"))) === false) {
-        loadSets();
-    }
-
-
-
+    win.once("ready-to-show", () => {
+        win.show();
+		win.setFullScreen(true);
+        splash.destroy();
+    });
 }
 
 app.allowRendererProcessReuse = true;
@@ -405,6 +271,45 @@ app.on("activate", () => {
 });
 
 
+//RPC
+
+var mapName = "Beta"
+
+const clientId = "865228662247653409";
+
+
+DiscordRPC.register(clientId);
+
+const rpc = new DiscordRPC.Client({
+    transport: "ipc"
+});
+const startTimestamp = new Date();
+
+async function setActivity() {
+    if (!rpc || !win) {
+        setTimeout(() => {
+            setActivity();
+        }, 15000);
+
+        return;
+    }
+
+    rpc.setActivity({
+        details: `Playing Krunker`,
+        //state: `${mapName}`,
+        startTimestamp,
+        largeImageKey: "icon1",
+        largeImageText: "OP Client",
+    });
+}
+
+rpc.on("ready", () => {
+    setActivity();
+});
+
+rpc.login({
+    clientId
+}).catch(console.error);
 
 //Resource Swapper
 const urls = [];
@@ -490,4 +395,93 @@ if ((fs.existsSync(path.join(app.getPath("documents"), "OP-Client/Resource-Swapp
     });
 };
 
-console.log(`OP Client v${version}`);
+//Settings 
+
+const dir5 = path.join(app.getPath("documents"), "OP-Client/Updates/Client-Settings");
+
+function restart() {
+    app.relaunch()
+    app.exit()
+};
+
+function loadSets() {
+    console.log('Settings Loading');
+
+    fs.writeFile(`${dir5}/timercolor.txt`, '#ffffff', "utf8", (err) => {
+        if (err)
+            console.log(err);
+        else {
+            console.log("Sets written");
+        }
+    });
+
+    fs.writeFile(`${dir5}/timertog.txt`, 'true', "utf8", (err) => {
+        if (err)
+            console.log(err);
+        else {
+            console.log("Sets written");
+        }
+    });
+
+    fs.writeFile(`${dir5}/skytog.txt`, 'false', "utf8", (err) => {
+        if (err)
+            console.log(err);
+        else {
+            console.log("Sets written");
+        }
+    });
+
+    fs.writeFile(`${dir5}/skyType.txt`, 'solid', "utf8", (err) => {
+        if (err)
+            console.log(err);
+        else {
+            console.log("Sets written");
+        }
+    });
+
+    fs.writeFile(`${dir5}/skycolor.txt`, '#ffffff', "utf8", (err) => {
+        if (err)
+            console.log(err);
+        else {
+            console.log("Sets written");
+        }
+    });
+
+    fs.writeFile(`${dir5}/swaptog.txt`, 'true', "utf8", (err) => {
+        if (err)
+            console.log(err);
+        else {
+            console.log("Sets written");
+        }
+    });
+
+    fs.writeFile(`${dir5}/angle.txt`, 'default', "utf8", (err) => {
+        if (err)
+            console.log(err);
+        else {
+            console.log("Sets written");
+        }
+    });
+
+    console.log('Settings Loaded');
+    setTimeout(function() {
+        restart();
+    }, 1000);
+};
+
+if ((fs.existsSync(path.join(app.getPath("documents"), "OP-Client/Updates/Client-Settings"))) === false) {
+    fs.mkdirSync(path.join(app.getPath("documents"), "OP-Client/Updates/Client-Settings"), {
+        recursive: true
+    });
+}
+
+if ((fs.existsSync(path.join(app.getPath("documents"), "OP-Client/Updates/Client-Settings/timercolor.txt"))) === false) {
+    loadSets();
+}
+
+//
+
+//
+const version = app.getVersion()
+console.log(`OP v${version}`);
+//

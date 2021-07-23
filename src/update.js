@@ -16,7 +16,6 @@ fs.unlink(eh, (err) => {
     if (err) {
         throw err;
     }
-
     console.log("Reset");
 });
 

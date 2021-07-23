@@ -8,7 +8,9 @@
   "dependencies": {
     "console": "^0.7.2",
     "discord-rpc": "^4.0.1",
+    "electron-localshortcut": "^3.2.1",
     "electron-squirrel-startup": "^1.0.0",
+    "electron-store": "^8.0.0",
     "fs": "^0.0.1-security",
     "node-downloader-helper": "^1.0.18",
     "os": "^0.1.2",

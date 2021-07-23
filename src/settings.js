@@ -9,6 +9,7 @@ const {
 } = require("electron").remote;
 
 const dir5 = path.join(app.getPath("documents"), "OP-Client/Updates/Client-Settings");
+
 var timercolor = fs.readFileSync(`${dir5}/timercolor.txt`, 'utf8'); //white #ffffff
 var enableTimer = fs.readFileSync(`${dir5}/timertog.txt`, 'utf8'); //true
 var enableCustomSky = fs.readFileSync(`${dir5}/skytog.txt`, 'utf8'); //false
