@@ -254,6 +254,8 @@ function CliSetSetter() {
 
 ipcRenderer.on("pointerunlock", () => {
     document.exitPointerLock();
+	showWindow(35)
+	closWind()
 });
 
 ipcRenderer.on("quickFFA", () => {
