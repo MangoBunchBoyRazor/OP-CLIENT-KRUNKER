@@ -1,0 +1,40 @@
+{
+  "name": "OP-Client",
+  "version": "0.6.1",
+  "description": "OP Krunker Client!",
+  "main": "main.js",
+  "author": "BluZed & Maz",
+  "license": "ISC",
+  "scripts": {
+    "postinstall": "electron-builder install-app-deps",
+    "start": "electron .",
+    "pack": "electron-builder --dir",
+    "dist": "electron-builder",
+    "build": "electron-builder build --win --publish never",
+    "deploy": "electron-builder build --win --publish always"
+  },
+  "dependencies": {
+    "fs": "0.0.1-security",
+    "multiline": "^2.0.0",
+    "node-downloader-helper": "^1.0.18",
+    "path": "^0.12.7"
+  },
+  "devDependencies": {
+    "electron": "^13.1.9",
+    "electron-builder": "^22.11.7"
+  },
+  "build": {
+    "appId": "OP-Client.Maz.BluZed.io",
+    "asar": true,
+    "win": {
+      "target": [
+        "nsis"
+      ],
+      "icon": "build/icon.ico"
+    },
+    "nsis": {
+      "allowToChangeInstallationDirectory": true,
+      "oneClick": false
+    }
+  }
+}
