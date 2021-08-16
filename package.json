@@ -26,6 +26,34 @@
   "build": {
     "appId": "OP-Client.Maz.BluZed.io",
     "asar": true,
+    "dmg": {
+      "background": "build/background.png",
+      "icon": "build/icon.icns",
+      "contents": [
+        {
+          "x": 110,
+          "y": 150
+        },
+        {
+          "x": 240,
+          "y": 150,
+          "type": "link",
+          "path": "/Applications"
+        }
+      ]
+    },
+    "linux": {
+      "target": [
+        "AppImage",
+        "deb"
+      ]
+    },
+    "mac": {
+      "target": [
+        "dmg"
+      ],
+      "icon": "build/icon.icns"
+    },
     "win": {
       "target": [
         "nsis"
